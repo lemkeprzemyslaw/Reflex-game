@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+.reflex-wrapper {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: Roboto, sans-serif;
+}
+
+.item-border {
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.text-item {
+    padding: 15px 20px;
+}
+
+.indicators,
+.game-buttons {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.indicators {
+    justify-content: space-between;
+}
+
+.indicators,
+.game-wrapper {
+    width: 400px;
+}
+
+.game-buttons {
+    justify-content: space-evenly;
+    user-select: none;
+}
+
+.tile {
+    height: 20px;
+    width: 20px;
+    border: 1px solid #000;
+}
+
+.game-board {
+    margin: 20px auto;
+}
