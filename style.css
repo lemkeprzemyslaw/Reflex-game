@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
-.reflex-wrapper {
+.game__wrapper {
     display: flex;
     height: 100vh;
     justify-content: center;
@@ -9,41 +9,83 @@
     font-family: Roboto, sans-serif;
 }
 
-.item-border {
+.game__indicators,
+.game__board-wrapper {
+    width: 600px;
+}
+
+.game__item,
+.game__board-wrapper {
     border: 1px solid #000;
     border-radius: 4px;
 }
 
-.text-item {
-    padding: 15px 20px;
+.game__item {
+    padding: 6px 12px;
 }
 
-.indicators,
-.game-buttons {
+.game__indicators,
+.game__buttons {
     display: flex;
     margin-bottom: 20px;
 }
 
-.indicators {
+.game__indicators {
     justify-content: space-between;
 }
 
-.indicators,
-.game-wrapper {
-    width: 400px;
+.game__name {
+    font-size: 26px;
+    font-weight: 600;
 }
 
-.game-buttons {
-    justify-content: space-evenly;
-    user-select: none;
+#health {
+    width: 55px;
 }
 
-.tile {
-    height: 20px;
-    width: 20px;
-    border: 1px solid #000;
+#points {
+    width: 66px;
+}
+
+#time {
+    width: 134px;
 }
 
 .game-board {
     margin: 20px auto;
+}
+
+.tile {
+    height: 30px;
+    width: 30px;
+    border: 1px solid #000;
+}
+
+.game__buttons {
+    justify-content: space-evenly;
+    user-select: none;
+}
+
+#start-btn {
+    border-color: #28a745;
+    color: #28a745;
+    transition: all .15s;
+}
+
+#start-btn:hover {
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+}
+
+#reset-btn {
+    border-color: #dc3545;
+    color: #dc3545;
+    transition: all .15s;
+}
+
+#reset-btn:hover {
+    background-color: #dc3545;
+    color: #fff;
+    cursor: pointer;
 }
