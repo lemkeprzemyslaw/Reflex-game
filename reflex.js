@@ -1,32 +1,121 @@
 import createBoard from './components/createBoard.js';
+import showIndicator from './components/showIndicator.js';
 
 const gameState = {
   boardSize: 5,
-  gameTime: 60,
+  gameTime: 10,
   health: 3,
   points: 0,
+  started: false,
 };
 
 createBoard('board', gameState.boardSize);
 
 const allTiles = document.querySelectorAll('.tile');
-const healthIndicator = document.querySelector('#health');
-const pointsIndicator = document.querySelector('#points');
-const timeIndicator = document.querySelector('#time');
+const startBtn = document.querySelector('#start-btn');
+const resetBtn = document.querySelector('#reset-btn');
 
-const showIndicator = (indicatorId, indicatorName, indicatorValue) => indicatorId.textContent = indicatorName + ': ' + indicatorValue;
+let activeTile = null;
+let userGetPoint = false;
 
-showIndicator(healthIndicator, 'Życie', gameState.health);
-showIndicator(pointsIndicator, 'Punkty', gameState.points);
-showIndicator(timeIndicator, 'Pozostały czas', gameState.gameTime);
+const randomTile = () => activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
+const showHealth = () => showIndicator('#health', 'Życie', gameState.health);
+const showPoints = () => showIndicator('#points', 'Punkty', gameState.points);
+const showTime = () => showIndicator('#time', 'Pozostały czas', gameState.gameTime);
 
-const randomTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
+showHealth();
+showPoints();
+showTime();
 
-randomTile.style.backgroundColor = 'green';
+const decrementTime = () => {
+  gameState.gameTime--;
+  showTime();
+};
+
+const decrementHealth = () => {
+  gameState.health--;
+  showHealth();
+};
+
+const incrementPoint = () => {
+  gameState.points++;
+  showPoints();
+};
+
+const clearTile = () => {
+  allTiles.forEach((tile) => tile.style.backgroundColor = '')
+};
+
+const startTimer = () => {
+  const timer = setInterval(() => {
+    if (gameState.gameTime === 0) {
+      alert('Gratulacje! Twój wynik: ' + gameState.points);
+    }
+
+    if (gameState.health === 0 || gameState.gameTime === 0) {
+      gameState.started = false;
+      clearInterval(timer);
+    } else if (gameState.started) {
+      decrementTime()
+    }
+  }, 1000);
+};
+
+startBtn.addEventListener('click', () => {
+  if (!gameState.started) {
+    gameState.started = true;
+    startTimer();
+    gameRun();
+  }
+});
+
+resetBtn.addEventListener('click',() => {
+  gameState.boardSize = 5;
+  gameState.gameTime = 60;
+  gameState.health = 3;
+  gameState.points = 0;
+  gameState.started = false;
+  clearTile();
+  activeTile = null;
+  showHealth();
+  showPoints();
+  showTime();
+});
 
 allTiles.forEach(tile => tile.addEventListener('click', (e) => {
-  console.log(e.target === randomTile)
+    if (gameState.started) {
+      if (e.target === activeTile) {
+        incrementPoint();
+        userGetPoint = true;
+        clearTile();
+        gameRun();
+      } else if (gameState.health > 0) {
+        decrementHealth()
+      }
+
+      if (gameState.health === 0) {
+        clearTile();
+        console.log(':(')
+      }
+    }
   })
 );
 
+const gameRun = () => {
+  randomTile();
 
+  if (!userGetPoint && gameState.started) {
+    activeTile.style.backgroundColor = 'green';
+
+    setTimeout(() => {
+      clearTile();
+      activeTile = null;
+
+      setTimeout(() => {
+        gameRun();
+      }, 1000);
+    }, 2000);
+  } else {
+    userGetPoint = false;
+  }
+};
