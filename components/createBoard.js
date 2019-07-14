@@ -11,7 +11,7 @@ const createBoard = (elementId, size) => {
       td.className = 'tile';
       tr.append(td)
     }
-    table.className = 'game-board';
+    table.className = 'game__board';
     table.append(tr)
   }
 

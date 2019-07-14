@@ -18,7 +18,7 @@ createBoard('board', gameState.boardSize);
 const allTiles = document.querySelectorAll('.tile');
 const startBtn = document.querySelector('#start-btn');
 const resetBtn = document.querySelector('#reset-btn');
-const modal = document.querySelector('#modal');
+const lostLifeInfo = document.querySelector('#lost-life');
 const showHealth = () => showIndicator('#health', 'Życie: ', gameState.health);
 const showPoints = () => showIndicator('#points', 'Punkty: ', gameState.points);
 const showTime = () => showIndicator('#time', 'Pozostały czas: ', gameState.gameTime);
@@ -39,6 +39,8 @@ const decrementHealth = () => {
   if (gameState.health > 0 && gameState.gameStarted) {
     gameState.health--;
     showHealth();
+    lostLifeInfo.style.visibility = 'visible';
+    setTimeout(() => lostLifeInfo.style.visibility = 'hidden', 1000)
   }
 };
 
