@@ -7,6 +7,9 @@ const gameState = {
   health: 3,
   points: 0,
   started: false,
+  highlightTimeout: null,
+  breakTimeout:null,
+  timerInterval: null,
 };
 
 createBoard('board', gameState.boardSize);
@@ -16,7 +19,6 @@ const startBtn = document.querySelector('#start-btn');
 const resetBtn = document.querySelector('#reset-btn');
 
 let activeTile = null;
-let userGetPoint = false;
 
 const randomTile = () => activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
 const showHealth = () => showIndicator('#health', 'Życie', gameState.health);
@@ -47,14 +49,14 @@ const clearTile = () => {
 };
 
 const startTimer = () => {
-  const timer = setInterval(() => {
+  gameState.timerInterval = setInterval(() => {
     if (gameState.gameTime === 0) {
       alert('Gratulacje! Twój wynik: ' + gameState.points);
     }
 
     if (gameState.health === 0 || gameState.gameTime === 0) {
       gameState.started = false;
-      clearInterval(timer);
+      clearInterval(gameState.timerInterval);
     } else if (gameState.started) {
       decrementTime()
     }
@@ -75,6 +77,8 @@ resetBtn.addEventListener('click',() => {
   gameState.health = 3;
   gameState.points = 0;
   gameState.started = false;
+  clearTimeout(gameState.highlightTimeout);
+  clearTimeout(gameState.breakTimeout);
   clearTile();
   activeTile = null;
   showHealth();
@@ -86,7 +90,8 @@ allTiles.forEach(tile => tile.addEventListener('click', (e) => {
     if (gameState.started) {
       if (e.target === activeTile) {
         incrementPoint();
-        userGetPoint = true;
+        clearTimeout(gameState.highlightTimeout);
+        clearTimeout(gameState.breakTimeout);
         clearTile();
         gameRun();
       } else if (gameState.health > 0) {
@@ -104,18 +109,17 @@ allTiles.forEach(tile => tile.addEventListener('click', (e) => {
 const gameRun = () => {
   randomTile();
 
-  if (!userGetPoint && gameState.started) {
+  if (gameState.started) {
     activeTile.style.backgroundColor = 'green';
 
-    setTimeout(() => {
+    gameState.highlightTimeout = setTimeout(() => {
       clearTile();
       activeTile = null;
+      decrementHealth();
 
-      setTimeout(() => {
+      gameState.breakTimeout = setTimeout(() => {
         gameRun();
       }, 1000);
     }, 2000);
-  } else {
-    userGetPoint = false;
   }
 };
