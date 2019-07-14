@@ -6,9 +6,9 @@ const gameState = {
   gameTime: 60,
   health: 3,
   points: 0,
-  started: false,
+  gameStarted: false,
+  gameLost: false,
   highlightTimeout: null,
-  breakTimeout:null,
   timerInterval: null,
   activeTile: null,
 };
@@ -28,14 +28,14 @@ showPoints();
 showTime();
 
 const decrementTime = () => {
-  if (gameState.started) {
+  if (gameState.gameStarted) {
     gameState.gameTime--;
     showTime();
   }
 };
 
 const decrementHealth = () => {
-  if (gameState.health > 0 && gameState.started) {
+  if (gameState.health > 0 && gameState.gameStarted) {
     gameState.health--;
     showHealth();
   }
@@ -51,56 +51,69 @@ const clearTile = () => {
   gameState.activeTile = null;
 };
 
+const clearIntervalAndTimeouts = () => {
+  clearInterval(gameState.timerInterval);
+  clearTimeout(gameState.highlightTimeout);
+};
+
+const checkHealth = () => {
+  if (gameState.health === 0) {
+    gameState.gameLost = true;
+    clearIntervalAndTimeouts();
+    clearTile();
+    console.log(':(');
+  }
+};
+
+const checkTime = () => {
+  if (gameState.gameTime === 0) {
+    gameState.gameLost = true;
+    clearIntervalAndTimeouts();
+    clearTile();
+    console.log('Gratulacje! Twój wynik: ' + gameState.points);
+  }
+};
+
 const startTimer = () => {
   gameState.timerInterval = setInterval(() => {
-    if (gameState.gameTime === 0) {
-      clearInterval(gameState.timerInterval);
-      clearTile();
-      console.log('Gratulacje! Twój wynik: ' + gameState.points);
-    }
-
-    if (gameState.health === 0 || gameState.gameTime === 0) {
-      gameState.started = false;
-      clearInterval(gameState.timerInterval);
-      clearTile();
-      console.log(':(');
-    }
-
+    checkTime();
     decrementTime()
   }, 1000);
 };
 
 startBtn.addEventListener('click', () => {
-  if (!gameState.started) {
-    gameState.started = true;
+  if (!gameState.gameStarted && !gameState.gameLost) {
+    gameState.gameStarted = true;
     startTimer();
     highlightTile();
   }
 });
 
 allTiles.forEach(tile => tile.addEventListener('click', (e) => {
+    if (gameState.gameStarted && !gameState.gameLost) {
+      if (e.target === gameState.activeTile) {
+        incrementPoint();
+      } else {
+        decrementHealth();
+      }
 
-  if (e.target === gameState.activeTile && gameState.started) {
-    incrementPoint();
-  } else {
-    decrementHealth();
-  }
-
-  clearTimeout(gameState.highlightTimeout);
-  clearTile();
-  highlightTile();
+      checkHealth();
+      clearTimeout(gameState.highlightTimeout);
+      clearTile();
+      highlightTile();
+    }
   })
 );
 
 const highlightTile = () => {
   randomTile();
-
-  if (gameState.started) {
+  if (gameState.gameStarted && !gameState.gameLost) {
     gameState.activeTile.style.backgroundColor = 'green';
 
     gameState.highlightTimeout = setTimeout(() => {
       clearTile();
       decrementHealth();
+      checkHealth();
 
       setTimeout(() => {
         highlightTile();
@@ -110,15 +123,17 @@ const highlightTile = () => {
 };
 
 resetBtn.addEventListener('click',() => {
-  gameState.boardSize = 5;
-  gameState.gameTime = 60;
-  gameState.health = 3;
-  gameState.points = 0;
-  gameState.started = false;
-  clearTimeout(gameState.highlightTimeout);
-  clearTimeout(gameState.breakTimeout);
-  clearTile();
-  showHealth();
-  showPoints();
-  showTime();
+  if (gameState.gameStarted) {
+    gameState.boardSize = 5;
+    gameState.gameTime = 60;
+    gameState.health = 3;
+    gameState.points = 0;
+    gameState.gameStarted = false;
+    gameState.gameLost = false;
+    clearIntervalAndTimeouts();
+    clearTile();
+    showHealth();
+    showPoints();
+    showTime();
+  }
 });
