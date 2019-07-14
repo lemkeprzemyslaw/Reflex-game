@@ -28,7 +28,7 @@ showPoints();
 showTime();
 
 const decrementTime = () => {
-  if (gameState.gameStarted) {
+  if (gameState.gameTime > 0 && gameState.gameStarted) {
     gameState.gameTime--;
     showTime();
   }

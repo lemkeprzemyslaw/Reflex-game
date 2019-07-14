@@ -113,9 +113,9 @@
     border-color: #6c757d;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 610px) {
     .game__modal {
-        width: 200px;
+        width: 250px;
     }
 
     .game__wrapper {
@@ -124,7 +124,8 @@
 
     .game__indicators,
     .game__board-wrapper {
-        width: 250px;
+        width: 300px;
+        margin: 0;
     }
 
     .game__indicators {
@@ -144,5 +145,10 @@
     .game__name {
         order: 1;
         margin-bottom: 20px;
+    }
+
+    .tile {
+        height: 40px;
+        width: 40px;
     }
 }
