@@ -18,9 +18,10 @@ createBoard('board', gameState.boardSize);
 const allTiles = document.querySelectorAll('.tile');
 const startBtn = document.querySelector('#start-btn');
 const resetBtn = document.querySelector('#reset-btn');
-const showHealth = () => showIndicator('#health', 'Życie', gameState.health);
-const showPoints = () => showIndicator('#points', 'Punkty', gameState.points);
-const showTime = () => showIndicator('#time', 'Pozostały czas', gameState.gameTime);
+const modal = document.querySelector('#modal');
+const showHealth = () => showIndicator('#health', 'Życie: ', gameState.health);
+const showPoints = () => showIndicator('#points', 'Punkty: ', gameState.points);
+const showTime = () => showIndicator('#time', 'Pozostały czas: ', gameState.gameTime);
 const randomTile = () => gameState.activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
 
 showHealth();
@@ -61,7 +62,8 @@ const checkHealth = () => {
     gameState.gameLost = true;
     clearIntervalAndTimeouts();
     clearTile();
-    console.log(':(');
+    showIndicator('#modal', "Niestety straciłeś wszystkie życia! Zdobyte punkty: ", gameState.points);
+    modal.style.visibility = 'visible';
   }
 };
 
@@ -70,7 +72,8 @@ const checkTime = () => {
     gameState.gameLost = true;
     clearIntervalAndTimeouts();
     clearTile();
-    console.log('Gratulacje! Twój wynik: ' + gameState.points);
+    showIndicator('#modal', 'Gratulacje, wygałeś! Zdobyte punkty: ', gameState.points);
+    modal.style.visibility = 'visible';
   }
 };
 
@@ -128,6 +131,7 @@ resetBtn.addEventListener('click',() => {
   if (gameState.gameStarted) {
     startBtn.classList.remove('disabled');
     resetBtn.classList.add('disabled');
+    modal.style.visibility = 'hidden';
     gameState.boardSize = 5;
     gameState.gameTime = 60;
     gameState.health = 3;

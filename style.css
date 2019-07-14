@@ -1,17 +1,25 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
+body {
+    margin: 0;
+}
+
 .game__modal {
-    width: 500px;
-    height: 200px;
+    width: 300px;
+    height: 190px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    top: 50%;
+    top: 0;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background-color: rgba(255, 255, 255, .9);
     visibility: hidden;
+    padding: 12px;
+    text-align: center;
+    font-size: 18px;
+    line-height: 32px;
 }
 
 .game__wrapper {
@@ -32,6 +40,10 @@
 .game__board-wrapper {
     border: 1px solid #000;
     border-radius: 4px;
+}
+
+.game__board-wrapper {
+    position: relative;
 }
 
 .game__item {
@@ -116,6 +128,7 @@
 @media (max-width: 610px) {
     .game__modal {
         width: 250px;
+        height: 232px;
     }
 
     .game__wrapper {
