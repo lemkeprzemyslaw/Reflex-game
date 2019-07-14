@@ -77,12 +77,14 @@ const checkTime = () => {
 const startTimer = () => {
   gameState.timerInterval = setInterval(() => {
     checkTime();
-    decrementTime()
+    decrementTime();
   }, 1000);
 };
 
 startBtn.addEventListener('click', () => {
   if (!gameState.gameStarted && !gameState.gameLost) {
+    startBtn.classList.add('disabled');
+    resetBtn.classList.remove('disabled');
     gameState.gameStarted = true;
     startTimer();
     highlightTile();
@@ -124,6 +126,8 @@ const highlightTile = () => {
 
 resetBtn.addEventListener('click',() => {
   if (gameState.gameStarted) {
+    startBtn.classList.remove('disabled');
+    resetBtn.classList.add('disabled');
     gameState.boardSize = 5;
     gameState.gameTime = 60;
     gameState.health = 3;
