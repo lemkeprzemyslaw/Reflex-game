@@ -3,13 +3,14 @@ import showIndicator from './components/showIndicator.js';
 
 const gameState = {
   boardSize: 5,
-  gameTime: 10,
+  gameTime: 60,
   health: 3,
   points: 0,
   started: false,
   highlightTimeout: null,
   breakTimeout:null,
   timerInterval: null,
+  activeTile: null,
 };
 
 createBoard('board', gameState.boardSize);
@@ -17,26 +18,27 @@ createBoard('board', gameState.boardSize);
 const allTiles = document.querySelectorAll('.tile');
 const startBtn = document.querySelector('#start-btn');
 const resetBtn = document.querySelector('#reset-btn');
-
-let activeTile = null;
-
-const randomTile = () => activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
 const showHealth = () => showIndicator('#health', 'Życie', gameState.health);
 const showPoints = () => showIndicator('#points', 'Punkty', gameState.points);
 const showTime = () => showIndicator('#time', 'Pozostały czas', gameState.gameTime);
+const randomTile = () => gameState.activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
 
 showHealth();
 showPoints();
 showTime();
 
 const decrementTime = () => {
-  gameState.gameTime--;
-  showTime();
+  if (gameState.started) {
+    gameState.gameTime--;
+    showTime();
+  }
 };
 
 const decrementHealth = () => {
-  gameState.health--;
-  showHealth();
+  if (gameState.health > 0 && gameState.started) {
+    gameState.health--;
+    showHealth();
+  }
 };
 
 const incrementPoint = () => {
@@ -45,21 +47,26 @@ const incrementPoint = () => {
 };
 
 const clearTile = () => {
-  allTiles.forEach((tile) => tile.style.backgroundColor = '')
+  allTiles.forEach((tile) => tile.style.backgroundColor = '');
+  gameState.activeTile = null;
 };
 
 const startTimer = () => {
   gameState.timerInterval = setInterval(() => {
     if (gameState.gameTime === 0) {
-      alert('Gratulacje! Twój wynik: ' + gameState.points);
+      clearInterval(gameState.timerInterval);
+      clearTile();
+      console.log('Gratulacje! Twój wynik: ' + gameState.points);
     }
 
     if (gameState.health === 0 || gameState.gameTime === 0) {
       gameState.started = false;
       clearInterval(gameState.timerInterval);
-    } else if (gameState.started) {
-      decrementTime()
+      clearTile();
+      console.log(':(');
     }
+
+    decrementTime()
   }, 1000);
 };
 
@@ -67,9 +74,40 @@ startBtn.addEventListener('click', () => {
   if (!gameState.started) {
     gameState.started = true;
     startTimer();
-    gameRun();
+    highlightTile();
   }
 });
+
+allTiles.forEach(tile => tile.addEventListener('click', (e) => {
+
+  if (e.target === gameState.activeTile && gameState.started) {
+    incrementPoint();
+  } else {
+    decrementHealth();
+  }
+
+  clearTimeout(gameState.highlightTimeout);
+  clearTile();
+  highlightTile();
+  })
+);
+
+const highlightTile = () => {
+  randomTile();
+
+  if (gameState.started) {
+    gameState.activeTile.style.backgroundColor = 'green';
+
+    gameState.highlightTimeout = setTimeout(() => {
+      clearTile();
+      decrementHealth();
+
+      setTimeout(() => {
+        highlightTile();
+      }, 1000);
+    }, 2000);
+  }
+};
 
 resetBtn.addEventListener('click',() => {
   gameState.boardSize = 5;
@@ -80,46 +118,7 @@ resetBtn.addEventListener('click',() => {
   clearTimeout(gameState.highlightTimeout);
   clearTimeout(gameState.breakTimeout);
   clearTile();
-  activeTile = null;
   showHealth();
   showPoints();
   showTime();
 });
-
-allTiles.forEach(tile => tile.addEventListener('click', (e) => {
-    if (gameState.started) {
-      if (e.target === activeTile) {
-        incrementPoint();
-        clearTimeout(gameState.highlightTimeout);
-        clearTimeout(gameState.breakTimeout);
-        clearTile();
-        gameRun();
-      } else if (gameState.health > 0) {
-        decrementHealth()
-      }
-
-      if (gameState.health === 0) {
-        clearTile();
-        console.log(':(')
-      }
-    }
-  })
-);
-
-const gameRun = () => {
-  randomTile();
-
-  if (gameState.started) {
-    activeTile.style.backgroundColor = 'green';
-
-    gameState.highlightTimeout = setTimeout(() => {
-      clearTile();
-      activeTile = null;
-      decrementHealth();
-
-      gameState.breakTimeout = setTimeout(() => {
-        gameRun();
-      }, 1000);
-    }, 2000);
-  }
-};
