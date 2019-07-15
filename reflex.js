@@ -1,5 +1,17 @@
 import createBoard from './components/createBoard.js';
 import showIndicator from './components/showIndicator.js';
+import {
+  allTiles,
+  startBtn,
+  resetBtn,
+  highlightActiveTile,
+  clearTile,
+  lostLifeInfo,
+  lostGameInfo,
+  finishGameInfo,
+  toggleDisableButton,
+  hideModal
+} from './components/domModificators.js';
 
 const gameState = {
   boardSize: 5,
@@ -15,14 +27,10 @@ const gameState = {
 
 createBoard('board', gameState.boardSize);
 
-const allTiles = document.querySelectorAll('.tile');
-const startBtn = document.querySelector('#start-btn');
-const resetBtn = document.querySelector('#reset-btn');
-const lostLifeInfo = document.querySelector('#lost-life');
 const showHealth = () => showIndicator('#health', 'Życie: ', gameState.health);
 const showPoints = () => showIndicator('#points', 'Punkty: ', gameState.points);
 const showTime = () => showIndicator('#time', 'Pozostały czas: ', gameState.gameTime);
-const randomTile = () => gameState.activeTile = allTiles[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
+const randomTile = () => gameState.activeTile = allTiles()[Math.floor(Math.random() * Math.pow(gameState.boardSize, 2))];
 
 showHealth();
 showPoints();
@@ -39,19 +47,13 @@ const decrementHealth = () => {
   if (gameState.health > 0 && gameState.gameStarted) {
     gameState.health--;
     showHealth();
-    lostLifeInfo.style.visibility = 'visible';
-    setTimeout(() => lostLifeInfo.style.visibility = 'hidden', 1000)
+    lostLifeInfo();
   }
 };
 
 const incrementPoint = () => {
   gameState.points++;
   showPoints();
-};
-
-const clearTile = () => {
-  allTiles.forEach((tile) => tile.style.backgroundColor = '');
-  gameState.activeTile = null;
 };
 
 const clearIntervalAndTimeouts = () => {
@@ -63,9 +65,8 @@ const checkHealth = () => {
   if (gameState.health === 0) {
     gameState.gameLost = true;
     clearIntervalAndTimeouts();
-    clearTile();
-    showIndicator('#modal', "Niestety straciłeś wszystkie życia! Zdobyte punkty: ", gameState.points);
-    modal.style.visibility = 'visible';
+    clearTile(gameState.activeTile);
+    lostGameInfo(gameState.points);
   }
 };
 
@@ -73,9 +74,8 @@ const checkTime = () => {
   if (gameState.gameTime === 0) {
     gameState.gameLost = true;
     clearIntervalAndTimeouts();
-    clearTile();
-    showIndicator('#modal', 'Gratulacje, wygałeś! Zdobyte punkty: ', gameState.points);
-    modal.style.visibility = 'visible';
+    clearTile(gameState.activeTile);
+    finishGameInfo(gameState.points);
   }
 };
 
@@ -86,17 +86,25 @@ const startTimer = () => {
   }, 1000);
 };
 
+const resetGameState = () => {
+  gameState.boardSize = 5;
+  gameState.gameTime = 60;
+  gameState.health = 3;
+  gameState.points = 0;
+  gameState.gameStarted = false;
+  gameState.gameLost = false;
+};
+
 startBtn.addEventListener('click', () => {
   if (!gameState.gameStarted && !gameState.gameLost) {
-    startBtn.classList.add('disabled');
-    resetBtn.classList.remove('disabled');
     gameState.gameStarted = true;
+    toggleDisableButton();
     startTimer();
-    highlightTile();
+    highlightRandomTile();
   }
 });
 
-allTiles.forEach(tile => tile.addEventListener('click', (e) => {
+allTiles().forEach(tile => tile.addEventListener('click', (e) => {
     if (gameState.gameStarted && !gameState.gameLost) {
       if (e.target === gameState.activeTile) {
         incrementPoint();
@@ -106,24 +114,25 @@ allTiles.forEach(tile => tile.addEventListener('click', (e) => {
 
       checkHealth();
       clearTimeout(gameState.highlightTimeout);
-      clearTile();
-      highlightTile();
+      clearTile(gameState.activeTile);
+      highlightRandomTile();
     }
   })
 );
 
-const highlightTile = () => {
+const highlightRandomTile = () => {
   randomTile();
+
   if (gameState.gameStarted && !gameState.gameLost) {
-    gameState.activeTile.style.backgroundColor = 'green';
+    highlightActiveTile(gameState.activeTile);
 
     gameState.highlightTimeout = setTimeout(() => {
-      clearTile();
+      clearTile(gameState.activeTile);
       decrementHealth();
       checkHealth();
 
       setTimeout(() => {
-        highlightTile();
+        highlightRandomTile();
       }, 1000);
     }, 2000);
   }
@@ -131,17 +140,11 @@ const highlightTile = () => {
 
 resetBtn.addEventListener('click',() => {
   if (gameState.gameStarted) {
-    startBtn.classList.remove('disabled');
-    resetBtn.classList.add('disabled');
-    modal.style.visibility = 'hidden';
-    gameState.boardSize = 5;
-    gameState.gameTime = 60;
-    gameState.health = 3;
-    gameState.points = 0;
-    gameState.gameStarted = false;
-    gameState.gameLost = false;
+    toggleDisableButton();
+    hideModal();
+    resetGameState();
     clearIntervalAndTimeouts();
-    clearTile();
+    clearTile(gameState.activeTile);
     showHealth();
     showPoints();
     showTime();
