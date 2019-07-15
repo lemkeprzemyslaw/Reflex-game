@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Reflex</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="game__wrapper">
+    <div class="game__indicators">
+        <span id="health" class="game__item"></span>
+        <span id="points" class="game__item"></span>
+        <span class="game__name">Reflex Game</span>
+        <span id="time" class="game__item"></span>
+    </div>
+    <div class="game__board-wrapper">
+        <div id="modal" class="game__modal"></div>
+        <div id="board"></div>
+        <div id="lost-life" class="game__lost-life-info">Straciłeś życie!</div>
+        <div class="game__buttons">
+            <div id="start-btn" class="game__start-button game__item">Start</div>
+            <div id="reset-btn" class="game__reset-button game__item disabled">Reset</div>
+        </div>
+    </div>
+</div>
+
+<script src="bundle.js" type="module"></script>
+</body>
+
+</html>
