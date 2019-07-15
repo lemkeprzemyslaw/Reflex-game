@@ -12,14 +12,14 @@ module.exports = {
     devtool: "inline-source-map",
     output: {
         filename: 'bundle.js',
-        path: path.join(__dirname, 'docs')
+        path: path.join(__dirname, 'dist')
     },
     mode: isProduction ? 'production' : 'development',
     resolve: {
         extensions: ['.ts', '.js'],
     },
     devServer: {
-        contentBase: path.join(__dirname, "docs"),
+        contentBase: path.join(__dirname, "dist"),
         port: 9000,
         overlay: {
             warnings: false,
@@ -55,11 +55,11 @@ module.exports = {
     },
     plugins: [
         new WriteFilePlugin(),
-        new CleanWebpackPlugin(['docs/*.*']),
+        new CleanWebpackPlugin(['dist/*.*']),
         new CopyWebpackPlugin([
             {
                 from: path.join(__dirname, 'src/static'),
-                to: path.join(__dirname, 'docs')
+                to: path.join(__dirname, 'dist')
             }
         ])
     ],
